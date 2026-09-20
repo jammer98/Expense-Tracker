@@ -1,4 +1,4 @@
-import { getAvailableCategories } from "../services/category.service";
+import { getAvailableCategories } from "../services/category.service.js";
 
 export async function listCategories(req,res){
     const categories = getAvailableCategories(req.user.id);

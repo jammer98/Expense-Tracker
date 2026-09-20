@@ -1,7 +1,7 @@
 import { Router } from "express";
-import { CatchAsync } from "../utils/CatchAsync";
-import { protect } from "../middlewares/auth.middleware";
-import { create, list, getOne, update, remove } from "../controllers/expense.controller";
+import { CatchAsync } from "../utils/CatchAsync.js";
+import { protect } from "../middlewares/auth.middleware.js";
+import { create, list, getOne, update, remove } from "../controllers/expense.controller.js";
 
 const router = Router();
 router.use(protect); // every route require a valid token

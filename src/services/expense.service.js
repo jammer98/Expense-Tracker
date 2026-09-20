@@ -1,7 +1,7 @@
-import pool from "../config/Db";
-import logger from "../utils/logger";
-import { AppError } from "../utils/AppError";
-import { isCtaegoryAccessible } from "./category.service";
+import pool from "../config/Db.js";
+import logger from "../utils/logger.js";
+import { AppError } from "../utils/AppError.js";
+import { isCtaegoryAccessible } from "./category.service.js";
 
 export async function createExpense({ userId, categoryId, amount, description, spentOn}){
     if( categoryId ){

@@ -1,5 +1,5 @@
 import * as expenseService from "../services/expense.service.js";
-import { AppError } from "../utils/AppError";
+import { AppError } from "../utils/AppError.js";
 
 export async function create(req,res){
     const { categoryId, amount, description, spentOn } = req.body;

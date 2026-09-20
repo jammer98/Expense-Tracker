@@ -1,4 +1,4 @@
-import pool from "../config/Db";
+import pool from "../config/Db.js";
 
 export async function getAvailableCategories(userId){
     const { rows } = await pool.query("SELECT id,name FROM categories WHERE user_id = $1 OR IS NULL ORDER  BY name",[userId]);

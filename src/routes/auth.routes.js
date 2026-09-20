@@ -1,11 +1,11 @@
 import { Router } from "express";
-import { catchAsync } from "../utils/CatchAsync.js"
+import { CatchAsync } from "../utils/CatchAsync.js"
 import { register, login} from "../controllers/auth.controller.js"
 
 
 const router = Router();
 
-router.post("/register",catchAsync(register));
-router.post("/login",catchAsync(login));
+router.post("/register",CatchAsync(register));
+router.post("/login",CatchAsync(login));
 
 export default router;
