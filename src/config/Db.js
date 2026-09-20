@@ -4,7 +4,7 @@ import logger from "../utils/logger.js";
 const { Pool } = pg;
 
 const pool = new Pool({
-  connectionString: process.env.DATABASE_URI,
+  connectionString: process.env.DATABASE_URL,
 });
 
 pool.on("connect", () => {

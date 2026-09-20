@@ -22,7 +22,9 @@ export async function registerUser({ name,email,password }){
 
     const passwordHash = await bcryptjs.hash(password,10);
 
-    const { rows } = await pool.query("INSERT INTO users(name,email,password_hash) VLAUES ($1,$2,$3) RETURNING id, name,email,createdAt",[name,email,password]);
+    
+
+    const { rows } = await pool.query("INSERT INTO users(name,email,password_hash) VLAUES ($1,$2,$3) RETURNING id, name,email,createdAt",[name,email,passwordHash]);
 
     const user = rows[0];
     logger.info({ userId: user.id },"User registred");
