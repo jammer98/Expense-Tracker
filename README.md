@@ -92,8 +92,8 @@ Fill in `.env`:
 DATABASE_URI=postgres://user:password@host:port/dbname
 JWT_SECRET=<generate with: node -e "console.log(require('crypto').randomBytes(32).toString('hex'))">
 JWT_EXPIRES_IN=7d
-RESEND_API_KEY=
-PORT=3002
+RESEND_API_KEY= your resedn api key
+PORT=3000
 ```
 
 Run the schema SQL above against your database, then:
@@ -148,3 +148,6 @@ The same underlying query also powers a scheduled job (`node-cron`, every Monday
 - Budget limits per category, with alerts when exceeded
 - CSV/PDF export of reports
 - Recurring expense support (subscriptions, rent)
+
+## Front-end Here 
+- Frontend: <https://github.com/jammer98/BudgetBase.git>
