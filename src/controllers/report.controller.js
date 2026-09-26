@@ -1,4 +1,4 @@
-import { getSummaryReport, getMonthOverMonth, getBudgetStatus } from "../services/report.service.js";
+import { getSummaryReport, getMonthOverMonth, getBudgetStatus, getTrend } from "../services/report.service.js";
 import { AppError } from "../utils/AppError.js";
 
 export async function summary(req, res) {
@@ -17,4 +17,11 @@ export async function budgetStatus(req, res) {
   if (!month) throw new AppError("month is required (format: YYYY-MM-01)", 400);
   const data = await getBudgetStatus({ userId: req.user.id, month });
   res.status(200).json({ budgetStatus: data });
+}
+
+export async function trend(req, res) {
+  const { startDate, endDate } = req.query;
+  if (!startDate || !endDate) throw new AppError("startDate and endDate are required", 400);
+  const data = await getTrend({ userId: req.user.id, startDate, endDate });
+  res.status(200).json({ trend: data });
 }

@@ -121,3 +121,29 @@ export async function getBudgetStatus({ userId, month }) {
     percentUsed: Number(r.percent_used),
   }));
 }
+
+export async function getTrend({ userId, startDate, endDate }) {
+  const { rows } = await pool.query(`
+    WITH days AS (
+      SELECT generate_series($2::date, $3::date, '1 day')::date AS day
+    ),
+    daily AS (
+      SELECT d.day, COALESCE(SUM(e.amount),0) AS total
+      FROM days d
+      LEFT JOIN expenses e ON e.spent_on = d.day AND e.user_id = $1
+      GROUP BY d.day
+    )
+    SELECT day, total,
+      SUM(total) OVER (ORDER BY day) AS running_balance,
+      AVG(total) OVER (ORDER BY day ROWS BETWEEN 6 PRECEDING AND CURRENT ROW) AS moving_avg_7d
+    FROM daily
+    ORDER BY day
+  `, [userId, startDate, endDate]);
+
+  return rows.map(r => ({
+    day: r.day,
+    total: Number(r.total),
+    runningBalance: Number(r.running_balance),
+    movingAvg7d: Number(r.moving_avg_7d),
+  }));
+}
