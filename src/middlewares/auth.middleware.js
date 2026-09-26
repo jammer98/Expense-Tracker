@@ -4,7 +4,7 @@ import { AppError } from "../utils/AppError.js"
 export function protect(req,res,next){
     const authHeader = req.headers.authorization;
 
-    if(!authHeader || !authHeader.startswith("Bearer")){
+    if(!authHeader || !authHeader.startsWith("Bearer")){
         return next(new AppError("Not authenticated",401));
     }
 
@@ -15,6 +15,6 @@ export function protect(req,res,next){
         req.user = { id:decoded.id }
         next();
     } catch (err) {
-        next(new AppError("Invalid or expired token"),401);
+        next(new AppError("Invalid or expired token", 401));
     }
 }
