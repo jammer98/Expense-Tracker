@@ -8,7 +8,6 @@ import BudgetRoutes from "../src/routes/budget.routes.js"
 import ReportRoutes from "../src/routes/report.routes.js"
 import cors from "cors"
 import pool from "./config/Db.js";
-import { CatchAsync } from "./utils/CatchAsync.js";
 
 
 const app = express();
