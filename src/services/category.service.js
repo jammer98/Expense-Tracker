@@ -6,7 +6,7 @@ export async function getAvailableCategories(userId){
     return rows;
 }
 
-export async function isCtaegoryAccessible(categoryId, userId){
+export async function isCategoryAccessible(categoryId, userId){
     const { rows } = await pool.query("SELECT id FROM categories WHERE id = $1 AND (user_id = $2 OR user_id IS NULL)",[categoryId,userId]);
     return rows.length > 0;
 }
