@@ -45,7 +45,7 @@ export async function sendWeeklyReports() {
     }
 
     const { data, error } = await resend.emails.send({
-      from: "reports@yourdomain.com",
+      from: " Expense Tracker <onboarding@resend.dev>",
       to: user.email,
       subject: "Your weekly expense summary",
       html: `<p>Hi ${user.name},</p><p>Your weekly expense summary is attached.</p>`,
