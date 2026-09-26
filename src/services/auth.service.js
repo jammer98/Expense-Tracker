@@ -24,7 +24,7 @@ export async function registerUser({ name,email,password }){
 
     
 
-    const { rows } = await pool.query("INSERT INTO users(name,email,password_hash) VLAUES ($1,$2,$3) RETURNING id, name,email,createdAt",[name,email,passwordHash]);
+    const { rows } = await pool.query("INSERT INTO users(name,email,password_hash) VALUES ($1,$2,$3) RETURNING id, name,email,created_at",[name,email,passwordHash]);
 
     const user = rows[0];
     logger.info({ userId: user.id },"User registred");
@@ -33,7 +33,7 @@ export async function registerUser({ name,email,password }){
 }
 
 export async function loginUser({ email,password }){
-    const { rows } = await pool.query("SELECT id,name,emial,password_hash FROM users WHERE email = $1",[email]);
+    const { rows } = await pool.query("SELECT id,name,email,password_hash FROM users WHERE email = $1",[email]);
 
     const user = rows[0];
 
@@ -41,7 +41,7 @@ export async function loginUser({ email,password }){
         throw new AppError("Invalid email or password",401);
     }
 
-    const isVlaid = await bcryptjs.compare(password,user.passwordHash);
+    const isVlaid = await bcryptjs.compare(password,user.password_hash);
 
     if(!isVlaid){
         throw new AppError("Invalid email or passowrd",401);

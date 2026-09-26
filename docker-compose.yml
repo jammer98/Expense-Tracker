@@ -1,0 +1,30 @@
+services:
+  api:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      PORT: 3000
+      DATABASE_URL: postgresql://postgres:devpassword@postgres:5432/expense_tracker
+      JWT_SECRET: dev-secret-change-in-prod
+      JWT_EXPIRES_IN: 7d
+      RESEND_API_KEY: placeholder
+      LOG_LEVEL: info
+      NODE_ENV: production
+    depends_on:
+      - postgres
+
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: devpassword
+      POSTGRES_DB: expense_tracker
+    ports:
+      - "5433:5432"
+    volumes:
+      - pgdata_expense:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+
+volumes:
+  pgdata_expense:
