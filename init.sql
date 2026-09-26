@@ -23,6 +23,14 @@ CREATE TABLE IF NOT EXISTS expenses (
   created_at TIMESTAMP DEFAULT NOW()
 );
 
+CREATE TABLE IF NOT EXISTS budgets (
+  id SERIAL PRIMARY KEY,
+  user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  category_id INTEGER NOT NULL REFERENCES categories(id) ON DELETE CASCADE,
+  monthly_limit NUMERIC(10,2) NOT NULL CHECK (monthly_limit > 0),
+  UNIQUE (user_id, category_id)
+);
+
 CREATE INDEX IF NOT EXISTS idx_expenses_user_id ON expenses(user_id);
 CREATE INDEX IF NOT EXISTS idx_expenses_spent_on ON expenses(spent_on);
 

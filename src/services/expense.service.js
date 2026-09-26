@@ -21,28 +21,31 @@ export async function createExpense({ userId, categoryId, amount, description, s
 }
 
 export async function getExpenses({ userId, categoryId, startDate, endDate, page = 1, limit = 20 }){
-    const conditions = ["user_id = $1"];
+    const conditions = ["e.user_id = $1"];
     const params = [userId];
 
     if(categoryId){
         params.push(categoryId);
-        conditions.push(`category_id = $${params.length}`);
+        conditions.push(`e.category_id = $${params.length}`);
     }
     if(startDate){
         params.push(startDate);
-        conditions.push(`spent_on >= $${params.length}`);
+        conditions.push(`e.spent_on >= $${params.length}`);
     }
     if(endDate){
         params.push(endDate);
-        conditions.push(`spent_on <= $${params.length}`);
+        conditions.push(`e.spent_on <= $${params.length}`);
     }
 
     const offset = (page - 1) * limit;
     params.push(limit,offset);
 
     const { rows } = await pool.query(`
-        SELECT * FROM expenses WHERE ${conditions.join(" AND ")}
-        ORDER BY spent_on DESC LIMIT $${params.length - 1} OFFSET $${params.length}`,
+        SELECT e.*, c.name AS category_name
+        FROM expenses e
+        LEFT JOIN categories c ON e.category_id = c.id
+        WHERE ${conditions.join(" AND ")}
+        ORDER BY e.spent_on DESC LIMIT $${params.length - 1} OFFSET $${params.length}`,
         params
     );
 

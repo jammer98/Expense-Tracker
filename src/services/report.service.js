@@ -59,3 +59,65 @@ export async function getWeeklySummaryForAllUsers() {
   );
   return rows;
 }
+
+// Month-over-month change per category, using LAG() to compare to the previous month
+export async function getMonthOverMonth({ userId }) {
+  const { rows } = await pool.query(`
+    WITH monthly AS (
+      SELECT category_id, date_trunc('month', spent_on) AS month, SUM(amount) AS total
+      FROM expenses
+      WHERE user_id = $1
+      GROUP BY category_id, date_trunc('month', spent_on)
+    )
+    SELECT m.category_id, COALESCE(c.name,'Uncategorized') AS category, m.month, m.total,
+           LAG(m.total) OVER (PARTITION BY m.category_id ORDER BY m.month) AS prev_total,
+           m.total - LAG(m.total) OVER (PARTITION BY m.category_id ORDER BY m.month) AS change,
+           CASE WHEN LAG(m.total) OVER (PARTITION BY m.category_id ORDER BY m.month) > 0
+                THEN ROUND(((m.total - LAG(m.total) OVER (PARTITION BY m.category_id ORDER BY m.month))
+                     / LAG(m.total) OVER (PARTITION BY m.category_id ORDER BY m.month)) * 100, 1)
+                ELSE NULL END AS percent_change
+    FROM monthly m
+    LEFT JOIN categories c ON c.id = m.category_id
+    ORDER BY m.category_id, m.month
+  `, [userId]);
+
+  return rows.map(r => ({
+    categoryId: r.category_id,
+    category: r.category,
+    month: r.month,
+    total: Number(r.total),
+    prevTotal: r.prev_total !== null ? Number(r.prev_total) : null,
+    change: r.change !== null ? Number(r.change) : null,
+    percentChange: r.percent_change !== null ? Number(r.percent_change) : null,
+  }));
+}
+
+// Budget status for a given month, flagging overruns entirely in SQL
+export async function getBudgetStatus({ userId, month }) {
+  const { rows } = await pool.query(`
+    WITH month_spend AS (
+      SELECT category_id, COALESCE(SUM(amount),0) AS spent
+      FROM expenses
+      WHERE user_id = $1 AND date_trunc('month', spent_on) = date_trunc('month', $2::date)
+      GROUP BY category_id
+    )
+    SELECT b.category_id, c.name AS category, b.monthly_limit,
+           COALESCE(ms.spent, 0) AS spent,
+           COALESCE(ms.spent, 0) > b.monthly_limit AS over_budget,
+           ROUND((COALESCE(ms.spent,0) / b.monthly_limit) * 100, 1) AS percent_used
+    FROM budgets b
+    JOIN categories c ON b.category_id = c.id
+    LEFT JOIN month_spend ms ON ms.category_id = b.category_id
+    WHERE b.user_id = $1
+    ORDER BY percent_used DESC
+  `, [userId, month]);
+
+  return rows.map(r => ({
+    categoryId: r.category_id,
+    category: r.category,
+    monthlyLimit: Number(r.monthly_limit),
+    spent: Number(r.spent),
+    overBudget: r.over_budget,
+    percentUsed: Number(r.percent_used),
+  }));
+}

@@ -22,8 +22,6 @@ export async function registerUser({ name,email,password }){
 
     const passwordHash = await bcryptjs.hash(password,10);
 
-    
-
     const { rows } = await pool.query("INSERT INTO users(name,email,password_hash) VALUES ($1,$2,$3) RETURNING id, name,email,created_at",[name,email,passwordHash]);
 
     const user = rows[0];
