@@ -15,7 +15,12 @@ const app = express();
 app.use(httpLogger);
 app.use(express.json());
 
-app.use(cors({ origin: "http://localhost:5173" }));
+const allowedOrigins = (process.env.ALLOWED_ORIGINS || "http://localhost:5173")
+  .split(",")
+  .map((o) => o.trim())
+  .filter(Boolean);
+
+app.use(cors({ origin: allowedOrigins }));
 
 app.get("/health", async (req, res) => {
   try {
